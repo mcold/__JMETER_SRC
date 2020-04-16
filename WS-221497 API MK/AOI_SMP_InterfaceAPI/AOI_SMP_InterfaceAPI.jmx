@@ -38,6 +38,26 @@
             <stringProp name="Argument.value">${__P(SERVICE_NAME, db)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
+          <elementProp name="TYPE_REC" elementType="Argument">
+            <stringProp name="Argument.name">TYPE_REC</stringProp>
+            <stringProp name="Argument.value">0</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="RECURRENT_STRING" elementType="Argument">
+            <stringProp name="Argument.name">RECURRENT_STRING</stringProp>
+            <stringProp name="Argument.value"></stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="AMOUNT" elementType="Argument">
+            <stringProp name="Argument.name">AMOUNT</stringProp>
+            <stringProp name="Argument.value">${__P(AMOUNT, 50000)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="FEE" elementType="Argument">
+            <stringProp name="Argument.name">FEE</stringProp>
+            <stringProp name="Argument.value">${__P(FEE, 100)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
         </collectionProp>
       </elementProp>
       <stringProp name="TestPlan.user_define_classpath"></stringProp>
@@ -81,7 +101,7 @@
         <stringProp name="username">SMP_T2_RUS</stringProp>
       </JDBCDataSource>
       <hashTree/>
-      <JSR223PreProcessor guiclass="TestBeanGUI" testclass="JSR223PreProcessor" testname="!!! DEL ME SET TYPE REC" enabled="true">
+      <JSR223PreProcessor guiclass="TestBeanGUI" testclass="JSR223PreProcessor" testname="!!! DEL ME SET TYPE REC" enabled="false">
         <stringProp name="scriptLanguage">groovy</stringProp>
         <stringProp name="parameters"></stringProp>
         <stringProp name="filename"></stringProp>
@@ -127,7 +147,7 @@ props.put(&quot;PcTransIdMAX&quot;, next_id.toString());</stringProp>
       </com.blazemeter.jmeter.threads.arrivals.ArrivalsThreadGroup>
       <hashTree>
         <ThroughputController guiclass="ThroughputControllerGui" testclass="ThroughputController" testname="T RECCURENT" enabled="true">
-          <intProp name="ThroughputController.style">0</intProp>
+          <intProp name="ThroughputController.style">1</intProp>
           <boolProp name="ThroughputController.perThread">false</boolProp>
           <intProp name="ThroughputController.maxThroughput">1</intProp>
           <FloatProperty>
@@ -137,28 +157,42 @@ props.put(&quot;PcTransIdMAX&quot;, next_id.toString());</stringProp>
           </FloatProperty>
         </ThroughputController>
         <hashTree>
-          <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="PROVE TYPE_REC" enabled="true">
-            <stringProp name="scriptLanguage">groovy</stringProp>
-            <stringProp name="parameters"></stringProp>
-            <stringProp name="filename"></stringProp>
-            <stringProp name="cacheKey">false</stringProp>
-            <stringProp name="script">String type_rec = props.get(&quot;TYPE_REC&quot;);
-String rec_id = String.valueOf(&quot;&quot;);
+          <IfController guiclass="IfControllerPanel" testclass="IfController" testname="IF TYPE REC" enabled="true">
+            <stringProp name="IfController.condition">&quot;${TYPE_REC}&quot;==1</stringProp>
+            <boolProp name="IfController.evaluateAll">false</boolProp>
+          </IfController>
+          <hashTree>
+            <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="SET RECURRENT STRING" enabled="true">
+              <stringProp name="scriptLanguage">groovy</stringProp>
+              <stringProp name="parameters"></stringProp>
+              <stringProp name="filename"></stringProp>
+              <stringProp name="cacheKey">false</stringProp>
+              <stringProp name="script">String[] vals = [&quot;0&quot;, &quot;1&quot;]
+String rec_id = (vals[new Random().nextInt(vals.length)]);
 
-if (type_rec == &quot;2&quot;){
-	rec_id = &quot;0&quot;;
+if(rec_id == &quot;0&quot;){
+	vars.put(&quot;RECURRENT_STRING&quot;, &quot;&lt;smp:recurrentId&gt;0&lt;/smp:recurrentId&gt;&quot;);
 }
-
-if (type_rec == &quot;3&quot;){
-  int var = new Random().nextInt(2);
-  if(var==1){rec_id = &quot;0&quot;;}
-	  else {rec_id = String.valueOf(&quot;&quot;);}
-}
-
-vars.put(&quot;TYPE_REC&quot;, type_rec);
-props.put(&quot;RecurrentID&quot;, rec_id);</stringProp>
-          </JSR223Sampler>
-          <hashTree/>
+</stringProp>
+            </JSR223Sampler>
+            <hashTree/>
+          </hashTree>
+          <IfController guiclass="IfControllerPanel" testclass="IfController" testname="IF TYPE REC" enabled="true">
+            <stringProp name="IfController.condition">&quot;${TYPE_REC}&quot;==0</stringProp>
+            <boolProp name="IfController.evaluateAll">false</boolProp>
+          </IfController>
+          <hashTree>
+            <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="SET RECURRENT STRING" enabled="true">
+              <collectionProp name="Arguments.arguments">
+                <elementProp name="RECURRENT_STRING" elementType="Argument">
+                  <stringProp name="Argument.name">RECURRENT_STRING</stringProp>
+                  <stringProp name="Argument.value">&lt;smp:recurrentId&gt;0&lt;/smp:recurrentId&gt;</stringProp>
+                  <stringProp name="Argument.metadata">=</stringProp>
+                </elementProp>
+              </collectionProp>
+            </Arguments>
+            <hashTree/>
+          </hashTree>
           <DebugSampler guiclass="TestBeanGUI" testclass="DebugSampler" testname="DEBUG" enabled="true">
             <boolProp name="displayJMeterProperties">false</boolProp>
             <boolProp name="displayJMeterVariables">true</boolProp>
@@ -214,7 +248,7 @@ props.put(&quot;RecurrentID&quot;, rec_id);</stringProp>
           </FloatProperty>
         </ThroughputController>
         <hashTree>
-          <ConfigTestElement guiclass="HttpDefaultsGui" testclass="ConfigTestElement" testname="HTTP Request Defaults" enabled="true">
+          <ConfigTestElement guiclass="HttpDefaultsGui" testclass="ConfigTestElement" testname="HTTP DEFAULT" enabled="true">
             <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
               <collectionProp name="Arguments.arguments"/>
             </elementProp>
@@ -227,41 +261,6 @@ props.put(&quot;RecurrentID&quot;, rec_id);</stringProp>
             <stringProp name="HTTPSampler.connect_timeout"></stringProp>
             <stringProp name="HTTPSampler.response_timeout"></stringProp>
           </ConfigTestElement>
-          <hashTree/>
-          <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="SYSTEM SET" enabled="false">
-            <collectionProp name="Arguments.arguments">
-              <elementProp name="ip" elementType="Argument">
-                <stringProp name="Argument.name">ip</stringProp>
-                <stringProp name="Argument.value">${__P(IP, 192.168.16.206)}</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-              <elementProp name="port" elementType="Argument">
-                <stringProp name="Argument.name">port</stringProp>
-                <stringProp name="Argument.value">8080</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-              <elementProp name="url" elementType="Argument">
-                <stringProp name="Argument.name">url</stringProp>
-                <stringProp name="Argument.value">/${__P(URL, wsdl/AOI_SMP_InterfaceAPI/SMPInterfaceAPI)}</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-              <elementProp name="db_ip" elementType="Argument">
-                <stringProp name="Argument.name">db_ip</stringProp>
-                <stringProp name="Argument.value">${__P(DB_IP, 192.168.17.100)}</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-              <elementProp name="db_port" elementType="Argument">
-                <stringProp name="Argument.name">db_port</stringProp>
-                <stringProp name="Argument.value">${__P(DB_PORT, 1521)}</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-              <elementProp name="service_name" elementType="Argument">
-                <stringProp name="Argument.name">service_name</stringProp>
-                <stringProp name="Argument.value">${__P(SERVICE_NAME, db)}</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-            </collectionProp>
-          </Arguments>
           <hashTree/>
           <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="DATA SET" enabled="true">
             <collectionProp name="Arguments.arguments">
@@ -295,31 +294,12 @@ vars.put(&quot;PcTransId&quot;, pc_trans_id.toString());
 </stringProp>
           </JSR223Sampler>
           <hashTree/>
-          <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="GET RECURRENT_ID" enabled="true">
-            <stringProp name="scriptLanguage">groovy</stringProp>
-            <stringProp name="parameters"></stringProp>
-            <stringProp name="filename"></stringProp>
-            <stringProp name="cacheKey">false</stringProp>
-            <stringProp name="script">String rec_id = props.get(&quot;RecurrentID&quot;);
-vars.put(&quot;RecurID&quot;, rec_id);</stringProp>
-          </JSR223Sampler>
-          <hashTree/>
           <IfController guiclass="IfControllerPanel" testclass="IfController" testname="PROVE" enabled="true">
             <stringProp name="IfController.condition">${JMeterThread.last_sample_ok}</stringProp>
             <boolProp name="IfController.evaluateAll">true</boolProp>
             <boolProp name="IfController.useExpression">true</boolProp>
           </IfController>
           <hashTree>
-            <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="SET LOCAL" enabled="true">
-              <collectionProp name="Arguments.arguments">
-                <elementProp name="RECURRENT_STRING" elementType="Argument">
-                  <stringProp name="Argument.name">RECURRENT_STRING</stringProp>
-                  <stringProp name="Argument.value"></stringProp>
-                  <stringProp name="Argument.metadata">=</stringProp>
-                </elementProp>
-              </collectionProp>
-            </Arguments>
-            <hashTree/>
             <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="GET RANDOM DATA" enabled="true">
               <stringProp name="cacheKey">false</stringProp>
               <stringProp name="filename"></stringProp>
@@ -327,7 +307,7 @@ vars.put(&quot;RecurID&quot;, rec_id);</stringProp>
               <stringProp name="script">import org.apache.commons.io.FileUtils;
 
 //ПЦ
-List pc_lines = FileUtils.readLines(new File(&quot;D:/ProtiIes/Holodnuk-M/Documents/WORK DIRS/JMETER/WS-221497 API MK/PC.csv&quot;));
+List pc_lines = FileUtils.readLines(new File(&quot;D:/ProtiIes/Holodnuk-M/Documents/WORK DIRS/JMETER/WS-221497 API MK/DATA/PC.csv&quot;));
 int pc_random = new Random().nextInt(pc_lines.size());
 String pc_line = pc_lines.get(pc_random);
 String pc_id = pc_line.split(&quot;;&quot;)[0];
@@ -343,7 +323,7 @@ vars.put(&quot;ConfigNotif&quot;, ConfigNotif);
 
 
 // продукт
-List g_lines = FileUtils.readLines(new File(&quot;D:/ProtiIes/Holodnuk-M/Documents/WORK DIRS/JMETER/WS-221497 API MK/GOOD_&quot; + pc_id + &quot;.csv&quot;));
+List g_lines = FileUtils.readLines(new File(&quot;D:/ProtiIes/Holodnuk-M/Documents/WORK DIRS/JMETER/WS-221497 API MK/DATA/GOOD_&quot; + pc_id + &quot;.csv&quot;));
 int g_random = new Random().nextInt(g_lines.size());
 String g_line = g_lines.get(g_random);
 
@@ -410,156 +390,6 @@ vars.put(&quot;SourcePayment&quot;, src_payment);
               <stringProp name="HTTPSampler.response_timeout"></stringProp>
             </HTTPSamplerProxy>
             <hashTree>
-              <JSR223PreProcessor guiclass="TestBeanGUI" testclass="JSR223PreProcessor" testname="SET RECURRENT STRING" enabled="true">
-                <stringProp name="scriptLanguage">groovy</stringProp>
-                <stringProp name="parameters"></stringProp>
-                <stringProp name="filename"></stringProp>
-                <stringProp name="cacheKey">false</stringProp>
-                <stringProp name="script">String rec_id = props.get(&quot;RecurID&quot;);
-
-if(rec_id == &quot;0&quot;){
-	vars.put(&quot;RECURRENT_STRING&quot;, &quot;&lt;smp:recurrentId&gt;0&lt;/smp:recurrentId&gt;&quot;);
-}
-</stringProp>
-              </JSR223PreProcessor>
-              <hashTree/>
-              <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="GET RESULT" enabled="true">
-                <stringProp name="RegexExtractor.useHeaders">false</stringProp>
-                <stringProp name="RegexExtractor.refname">INIT_STATUS</stringProp>
-                <stringProp name="RegexExtractor.regex">&lt;ber-ns0:status&gt;(.*)&lt;\/ber-ns0:status&gt;</stringProp>
-                <stringProp name="RegexExtractor.template">$1$</stringProp>
-                <stringProp name="RegexExtractor.default"></stringProp>
-                <stringProp name="RegexExtractor.match_number">1</stringProp>
-                <boolProp name="RegexExtractor.default_empty_value">true</boolProp>
-                <stringProp name="Sample.scope">all</stringProp>
-              </RegexExtractor>
-              <hashTree/>
-              <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="GET PAY_ID" enabled="true">
-                <stringProp name="RegexExtractor.useHeaders">false</stringProp>
-                <stringProp name="RegexExtractor.refname">PAY_ID</stringProp>
-                <stringProp name="RegexExtractor.regex">&lt;ber-ns0:payId&gt;(.*)&lt;\/ber-ns0:payId&gt;</stringProp>
-                <stringProp name="RegexExtractor.template">$1$</stringProp>
-                <stringProp name="RegexExtractor.default"></stringProp>
-                <stringProp name="RegexExtractor.match_number">1</stringProp>
-                <boolProp name="RegexExtractor.default_empty_value">true</boolProp>
-                <stringProp name="Sample.scope">all</stringProp>
-              </RegexExtractor>
-              <hashTree/>
-              <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="GET STATUS" enabled="true">
-                <stringProp name="RegexExtractor.useHeaders">false</stringProp>
-                <stringProp name="RegexExtractor.refname">INIT_STATUS</stringProp>
-                <stringProp name="RegexExtractor.regex">&lt;ber-ns0:status&gt;(.*)&lt;\/ber-ns0:status&gt;</stringProp>
-                <stringProp name="RegexExtractor.template">$1$</stringProp>
-                <stringProp name="RegexExtractor.default"></stringProp>
-                <stringProp name="RegexExtractor.match_number">1</stringProp>
-                <boolProp name="RegexExtractor.default_empty_value">true</boolProp>
-                <stringProp name="Sample.scope">all</stringProp>
-              </RegexExtractor>
-              <hashTree/>
-              <DebugPostProcessor guiclass="TestBeanGUI" testclass="DebugPostProcessor" testname="DEBUG" enabled="true">
-                <boolProp name="displayJMeterProperties">false</boolProp>
-                <boolProp name="displayJMeterVariables">true</boolProp>
-                <boolProp name="displaySamplerProperties">true</boolProp>
-                <boolProp name="displaySystemProperties">false</boolProp>
-              </DebugPostProcessor>
-              <hashTree/>
-              <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="RESULT TREE" enabled="true">
-                <boolProp name="ResultCollector.error_logging">false</boolProp>
-                <objProp>
-                  <name>saveConfig</name>
-                  <value class="SampleSaveConfiguration">
-                    <time>true</time>
-                    <latency>true</latency>
-                    <timestamp>true</timestamp>
-                    <success>true</success>
-                    <label>true</label>
-                    <code>true</code>
-                    <message>true</message>
-                    <threadName>true</threadName>
-                    <dataType>true</dataType>
-                    <encoding>false</encoding>
-                    <assertions>true</assertions>
-                    <subresults>true</subresults>
-                    <responseData>false</responseData>
-                    <samplerData>false</samplerData>
-                    <xml>false</xml>
-                    <fieldNames>true</fieldNames>
-                    <responseHeaders>false</responseHeaders>
-                    <requestHeaders>false</requestHeaders>
-                    <responseDataOnError>false</responseDataOnError>
-                    <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
-                    <assertionsResultsToSave>0</assertionsResultsToSave>
-                    <bytes>true</bytes>
-                    <sentBytes>true</sentBytes>
-                    <url>true</url>
-                    <threadCounts>true</threadCounts>
-                    <idleTime>true</idleTime>
-                    <connectTime>true</connectTime>
-                  </value>
-                </objProp>
-                <stringProp name="filename"></stringProp>
-              </ResultCollector>
-              <hashTree/>
-            </hashTree>
-            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="InitPayment" enabled="false">
-              <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
-              <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
-                <collectionProp name="Arguments.arguments">
-                  <elementProp name="" elementType="HTTPArgument">
-                    <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                    <stringProp name="Argument.value">&lt;soapenv:Envelope xmlns:soapenv=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot; xmlns:smp=&quot;http://www.bercut.com/schema/SMPTypeAPI&quot;&gt;&#xd;
-   &lt;soapenv:Header/&gt;&#xd;
-   &lt;soapenv:Body&gt;&#xd;
-      &lt;smp:InitPaymentRequest&gt;&#xd;
-         &lt;smp:userNameExternalSystem&gt;${UserName}&lt;/smp:userNameExternalSystem&gt;&#xd;
-         &lt;smp:userPasswordExternalSystem&gt;${Password}&lt;/smp:userPasswordExternalSystem&gt;&#xd;
-         &lt;smp:msisdn&gt;${__P(MSISDN, 79539965291)}&lt;/smp:msisdn&gt;&#xd;
-         &lt;smp:codeGoods&gt;${ProductID}&lt;/smp:codeGoods&gt;&#xd;
-         &lt;smp:payIdExternal&gt;${PcTransId}&lt;/smp:payIdExternal&gt;&#xd;
-         &lt;smp:amount&gt;${AMOUNT}&lt;/smp:amount&gt;&#xd;
-         &lt;smp:fee&gt;${FEE}&lt;/smp:fee&gt;&#xd;
-         &lt;smp:sourcePayment&gt;${SourcePayment}&lt;/smp:sourcePayment&gt;&#xd;
-         &lt;smp:comment&gt;test&lt;/smp:comment&gt;&#xd;
-         &lt;smp:transportType&gt;USSD&lt;/smp:transportType&gt;&#xd;
-         &lt;smp:templateMessages&gt;&lt;/smp:templateMessages&gt;&#xd;
-         &lt;smp:fcsEmail&gt;&lt;/smp:fcsEmail&gt;&#xd;
-         &lt;smp:fcsMsisdn&gt;&lt;/smp:fcsMsisdn&gt;&#xd;
-         ${RECURRENT_STRING}&#xd;
-      &lt;/smp:InitPaymentRequest&gt;&#xd;
-   &lt;/soapenv:Body&gt;&#xd;
-&lt;/soapenv:Envelope&gt;</stringProp>
-                    <stringProp name="Argument.metadata">=</stringProp>
-                  </elementProp>
-                </collectionProp>
-              </elementProp>
-              <stringProp name="HTTPSampler.domain">192.168.16.206</stringProp>
-              <stringProp name="HTTPSampler.port">8080</stringProp>
-              <stringProp name="HTTPSampler.protocol"></stringProp>
-              <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-              <stringProp name="HTTPSampler.path">/wsdl/AOI_SMP_InterfaceAPI/SMPInterfaceAPI</stringProp>
-              <stringProp name="HTTPSampler.method">POST</stringProp>
-              <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
-              <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
-              <boolProp name="HTTPSampler.use_keepalive">false</boolProp>
-              <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
-              <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
-              <stringProp name="HTTPSampler.connect_timeout"></stringProp>
-              <stringProp name="HTTPSampler.response_timeout"></stringProp>
-            </HTTPSamplerProxy>
-            <hashTree>
-              <JSR223PreProcessor guiclass="TestBeanGUI" testclass="JSR223PreProcessor" testname="SET RECURRENT STRING" enabled="true">
-                <stringProp name="scriptLanguage">groovy</stringProp>
-                <stringProp name="parameters"></stringProp>
-                <stringProp name="filename"></stringProp>
-                <stringProp name="cacheKey">false</stringProp>
-                <stringProp name="script">String rec_id = props.get(&quot;RecurID&quot;);
-
-if(rec_id == &quot;0&quot;){
-	vars.put(&quot;RECURRENT_STRING&quot;, &quot;&lt;smp:recurrentId&gt;0&lt;/smp:recurrentId&gt;&quot;);
-}
-</stringProp>
-              </JSR223PreProcessor>
-              <hashTree/>
               <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="GET RESULT" enabled="true">
                 <stringProp name="RegexExtractor.useHeaders">false</stringProp>
                 <stringProp name="RegexExtractor.refname">INIT_STATUS</stringProp>
@@ -1204,6 +1034,13 @@ if(rec_id == &quot;0&quot;){
         </ResultCollector>
         <hashTree/>
       </hashTree>
+      <DebugPostProcessor guiclass="TestBeanGUI" testclass="DebugPostProcessor" testname="Debug PostProcessor" enabled="true">
+        <boolProp name="displayJMeterProperties">false</boolProp>
+        <boolProp name="displayJMeterVariables">true</boolProp>
+        <boolProp name="displaySamplerProperties">true</boolProp>
+        <boolProp name="displaySystemProperties">false</boolProp>
+      </DebugPostProcessor>
+      <hashTree/>
       <kg.apc.jmeter.dbmon.DbMonCollector guiclass="kg.apc.jmeter.vizualizers.DbMonGui" testclass="kg.apc.jmeter.dbmon.DbMonCollector" testname="jp@gc - DbMon Samples Collector" enabled="true">
         <boolProp name="ResultCollector.error_logging">false</boolProp>
         <objProp>
